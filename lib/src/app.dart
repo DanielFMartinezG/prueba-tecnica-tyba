@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tyba_app/src/Usuarios/ui/pages/register/register_screen.dart';
-import 'package:tyba_app/src/screens/home.dart';
+import 'package:tyba_app/src/Usuarios/ui/pages/login/login_screen.dart';
 
 class App extends StatelessWidget {
   const App({Key? key}) : super(key: key);
@@ -8,8 +7,7 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
-      // home: Home(),
-      home: RegisterScreen(),
+      home: LoginScreen(),
     );
   }
 }

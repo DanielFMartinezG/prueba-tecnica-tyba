@@ -23,11 +23,11 @@ class RegisterState extends Equatable {
   }) : status = RequestStatus.failed;
 
   final UserModel? user;
-  final RequestStatus status;
-  final String mssg;
+  final RequestStatus? status;
+  final String? mssg;
 
   @override
-  List get props => [
+  List<Object?> get props => [
         status,
         mssg,
         user,

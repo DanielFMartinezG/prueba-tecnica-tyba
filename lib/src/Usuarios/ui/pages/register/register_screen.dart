@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tyba_app/src/Usuarios/bloc/authentication/auth_bloc.dart';
 import 'package:tyba_app/src/Usuarios/bloc/register/register_bloc.dart';
 import 'package:tyba_app/src/Usuarios/models/user_model.dart';
 import 'package:tyba_app/src/config/request_status.dart';
-import 'package:tyba_app/src/screens/home.dart';
 import 'package:tyba_app/src/widgets/action_button.dart';
+import 'package:tyba_app/src/widgets/auth_button.dart';
 import 'package:tyba_app/src/widgets/body_screen.dart';
 import 'package:tyba_app/src/widgets/form_input.dart';
 import 'package:tyba_app/src/widgets/loading.dart';
@@ -25,6 +26,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return BodyScreen(
+      title: 'Registro de usuario',
       body: [
         FormInput(
           inputTitle: 'Nombre',
@@ -43,10 +45,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
           onChanged: (value) => password = value,
         ),
         RegisterUserButton(
-          name: name,
-          lastName: lastName,
-          email: email,
-          password: password,
+          callback: () {
+            UserModel user = UserModel(
+              name: name,
+              lastName: lastName,
+              email: email,
+              password: password,
+            );
+            BlocProvider.of<RegisterBloc>(context).add(
+              CreateUser(user: user),
+            );
+          },
         ),
       ],
     );
@@ -56,71 +65,44 @@ class _RegisterScreenState extends State<RegisterScreen> {
 class RegisterUserButton extends StatelessWidget {
   const RegisterUserButton({
     Key? key,
-    required this.name,
-    required this.lastName,
-    required this.email,
-    required this.password,
+    required this.callback,
   }) : super(key: key);
-  final String? name;
-  final String? lastName;
-  final String? email;
-  final String? password;
+
+  final Function callback;
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<RegisterBloc, RegisterState>(
-      builder: (context, state) {
-        switch (state.status) {
-          case RequestStatus.noSubmitted:
-            return ActionButton(
-              title: 'Registrar',
-              callback: () {
-                BlocProvider.of<RegisterBloc>(context).add(
-                  CreateUser(
-                    user: UserModel(
-                      name: name,
-                      lastName: lastName,
-                      email: email,
-                      password: password,
-                    ),
-                  ),
-                );
-              },
+    return BlocBuilder<RegisterBloc, RegisterState>(builder: (context, state) {
+      switch (state.status) {
+        case RequestStatus.noSubmitted:
+          return ActionButton(
+            title: 'Registrar',
+            callback: callback,
+          );
+        case RequestStatus.failed:
+          BlocProvider.of<RegisterBloc>(context).add(
+            const ClearUser(),
+          );
+          return const Text('Error :(');
+        case RequestStatus.success:
+          WidgetsBinding.instance?.addPostFrameCallback((_) {
+            BlocProvider.of<AuthBloc>(context).add(
+              Login(email: state.user?.email, password: state.user?.password),
             );
-          case RequestStatus.inProgress:
-            return const Loading(
-              size: 25,
-            );
-          case RequestStatus.success:
-            WidgetsBinding.instance?.addPostFrameCallback((_) {
-              BlocProvider.of<RegisterBloc>(context).add(
-                ClearUser(
-                  user: UserModel(),
-                ),
-              );
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const Home(),
-                ),
-              );
-            });
-            return Container(
-              width: 25,
-              child: const Icon(
-                Icons.check,
-                color: Color(0xFF5CA8F5),
-              ),
-            );
-          case RequestStatus.failed:
-            BlocProvider.of<RegisterBloc>(context).add(
-              ClearUser(user: UserModel()),
-            );
-            return const Text('Error :(');
-          default:
-            return const Text('Estado no controlado');
-        }
-      },
-    );
+          });
+          return AuthButton(
+            callback: () {
+              BlocProvider.of<AuthBloc>(context).add(Login(
+                email: state.user?.email,
+                password: state.user?.password,
+              ));
+            },
+          );
+        default:
+          return const Loading(
+            size: 25,
+          );
+      }
+    });
   }
 }

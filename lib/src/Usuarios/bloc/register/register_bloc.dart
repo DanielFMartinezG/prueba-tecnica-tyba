@@ -13,12 +13,10 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
 
   @override
   Stream<RegisterState> mapEventToState(RegisterEvent event) async* {
-    // if (event is ClearUser) {
-    //   yield ClearUser(user: event.user);
-    // }
-    // else
     if (event is CreateUser) {
       yield* _createUser(event);
+    } else {
+      yield const RegisterState();
     }
   }
 
@@ -26,10 +24,8 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
     RegisterEvent event,
   ) async* {
     try {
-      yield RegisterState.inProgress(
-        user: UserModel(),
-      );
-      UserModel response = await repository.createUser(user: event.user);
+      yield const RegisterState.inProgress();
+      UserModel? response = await repository.createUser(user: event.user);
       yield RegisterState.success(user: response);
     } catch (error) {
       yield RegisterState.failed(mssg: error.toString());

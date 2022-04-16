@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tyba_app/src/Usuarios/bloc/authentication/auth_bloc.dart';
 import 'package:tyba_app/src/Usuarios/bloc/register/register_bloc.dart';
 import 'package:tyba_app/src/Usuarios/repository/user_repository.dart';
 import 'package:tyba_app/src/app.dart';
@@ -25,6 +26,11 @@ class TybaApp extends StatelessWidget {
             create: (context) => RegisterBloc(
               repository: RepositoryProvider.of<UserRepository>(context),
             ),
+          ),
+          BlocProvider(
+            create: (context) => AuthBloc(
+              repository: RepositoryProvider.of<UserRepository>(context),
+            )..add(const ClearAuth()),
           ),
         ],
         child: const App(),

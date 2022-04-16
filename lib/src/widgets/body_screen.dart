@@ -4,16 +4,18 @@ class BodyScreen extends StatelessWidget {
   const BodyScreen({
     Key? key,
     this.body = const [],
+    required this.title,
   }) : super(key: key);
 
   final List<Widget> body;
+  final String? title;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Icon(
-          Icons.login_outlined,
+          Icons.person_outline,
           color: Colors.white,
         ),
         centerTitle: true,
@@ -27,22 +29,24 @@ class BodyScreen extends StatelessWidget {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            const Text(
-              'Registro de usuario',
-              style: TextStyle(
-                fontSize: 20.0,
-                fontWeight: FontWeight.bold,
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              Text(
+                '$title',
+                style: const TextStyle(
+                  fontSize: 20.0,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
-            const SizedBox(height: 24.0),
-            Column(
-              children: body,
-            )
-          ],
+              const SizedBox(height: 24.0),
+              Column(
+                children: body,
+              )
+            ],
+          ),
         ),
       ),
     );

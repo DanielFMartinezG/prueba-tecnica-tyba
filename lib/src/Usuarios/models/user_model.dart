@@ -25,6 +25,7 @@ class UserModel {
         'name': _name,
         'lastName': _lastName,
         'email': _email,
+        'password': _password,
       };
 
   String? get name => _name;
